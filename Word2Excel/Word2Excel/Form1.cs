@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
+﻿//using DocumentFormat.OpenXml.Spreadsheet;
+using Aspose.Cells;
 using Mammoth;
 using System;
 using System.Collections.Generic;
@@ -10,28 +11,11 @@ namespace Word2Excel
 {
     public partial class Form1 : Form
     {
-        private Microsoft.Office.Interop.Excel.Application _xlApp;
-        private Microsoft.Office.Interop.Excel.Workbook _xlWorkbook;
         private string _fileName = string.Empty;
-        private string _tempdata = string.Empty;
 
         public Form1()
         {
             InitializeComponent();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-        }
-
-        private Cell CreateCell(string value)
-        {
-            var cell = new Cell
-            {
-                DataType = CellValues.String,
-                CellValue = new CellValue(value),
-            };
-            return cell;
         }
 
         private void btnLoad_Click(object sender, EventArgs e)
@@ -64,24 +48,19 @@ namespace Word2Excel
             {
                 return;
             }
+            string newfile = Guid.NewGuid() + "tem.xls";
+            string template = Path.GetFullPath("Template") + "\\Template.xls";
+            string tempFile = Path.GetFullPath("Template\\") + newfile;
+            Workbook book = new Workbook(template);
             try
             {
                 //string test = System.IO.Directory.GetCurrentDirectory();
-                string newfile = Guid.NewGuid() + "tem.xls";
-                string template = Path.GetFullPath("Template") + "\\Template.xls";
-                string tempFile = Path.GetFullPath("Template\\") + newfile;
-                File.Copy(template, tempFile, true);
-                _xlApp = new Microsoft.Office.Interop.Excel.Application();
-                _xlWorkbook = _xlApp.Workbooks.Open(tempFile);
-                //Xu ly data
-                Microsoft.Office.Interop.Excel._Worksheet sheet = _xlWorkbook.Worksheets[1];
-                // sheet.Range
-                // sheet.Rows
-                _xlApp.DisplayAlerts = false;
-                //SAVE
-                _xlWorkbook.SaveAs(Path.GetFullPath("Output\\") + _fileName + ".xls");
-                _xlApp.DisplayAlerts = true;
-                File.Delete(tempFile);
+                //xu ly data
+                // cell put value https://www.codeproject.com/Articles/5253765/Using-Excel-2019-Features-in-Aspose-Cells
+                // add data Workbook https://docs.aspose.com/cells/net/different-ways-to-open-files/
+                // set sytle https://www.csharpcodi.com/csharp-examples/Aspose.Cells.Cell.GetStyle()/
+                book.Save(Path.GetFullPath("Output\\") + _fileName + ".xls", SaveFormat.Excel97To2003);
+                MessageBox.Show("Done!");
             }
             catch (Exception)
             {
@@ -89,14 +68,7 @@ namespace Word2Excel
             }
             finally
             {
-                if (_xlWorkbook != null)
-                {
-                    _xlWorkbook.Close();
-                }
-                if (_xlApp != null)
-                {
-                    _xlApp.Quit();
-                }
+                book.Dispose();
             }
         }
     }
