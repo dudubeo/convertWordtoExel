@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -64,8 +65,7 @@ namespace Word2Excel
                 return;
             }
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp.txt");
-            string readText2 = File.ReadAllText(filePath);
-
+            //string readText2 = File.ReadAllText(filePath);
             var query = File.ReadAllLines(filePath);
             var listWord = query.Where(s => s != string.Empty).ToList();
             //var listWord = query.Select(x => x.Trim()).Where(s => s != string.Empty).ToList();
@@ -79,6 +79,28 @@ namespace Word2Excel
             Workbook book = new Workbook(template);
             try
             {
+                Worksheet ws = book.Worksheets[0];
+                int row = 3;
+                foreach (var item in listData)
+                {
+                    IList<PropertyInfo> properties = new List<PropertyInfo>(item.GetType().GetProperties())
+                            .Where(prop => prop.IsDefined(typeof(ExcelMapperAttribute), false))
+                            .ToList();
+                    if (properties == null || properties.Count < 1)
+                    {
+                        break;
+                    }
+                    foreach (PropertyInfo property in properties)
+                    {
+                        ExcelMapperAttribute mapperColumn = property.GetCustomAttribute<ExcelMapperAttribute>();
+
+                        if (!string.IsNullOrWhiteSpace(mapperColumn.ColumnName) && property.GetValue(item, null) != null)
+                        {
+                            ws.Cells[string.Format("{0}{1}", mapperColumn.ColumnName, row)].Value = property.GetValue(item, null);
+                        }
+                    }
+                    row++;
+                }
                 //string test = System.IO.Directory.GetCurrentDirectory();
                 //xu ly data
                 // cell put value https://www.codeproject.com/Articles/5253765/Using-Excel-2019-Features-in-Aspose-Cells
@@ -241,50 +263,151 @@ namespace Word2Excel
 
         internal class DataModel
         {
+            [ExcelMapper(columname: "A")]
             public string ThongTinDat_SoTo { get; set; }
+
+            [ExcelMapper(columname: "B")]
             public string ThongTinDat_SoThua { get; set; }
+
+            [ExcelMapper(columname: "C")]
             public string ThongTinDat_DienTich { get; set; }
+
+            [ExcelMapper(columname: "D")]
             public string ThongTinDat_MucDichSuDung { get; set; }
+
+            [ExcelMapper(columname: "E")]
             public string ThongTinDat_DiaChiThuaDat { get; set; }
+
+            [ExcelMapper(columname: "F")]
             public string ChuSuDung_ChuHo_HoTen { get; set; }
+
+            [ExcelMapper(columname: "G")]
             public string ChuSuDung_ChuHo_NamSinh { get; set; }
+
+            [ExcelMapper(columname: "H")]
             public string ChuSuDung_ChuHo_GioiTinh { get; set; }
+
+            [ExcelMapper(columname: "I")]
             public string ChuSuDung_ChuHo_LoaiGiayTo { get; set; }
+
+            [ExcelMapper(columname: "J")]
             public string ChuSuDung_ChuHo_SoGiayTo { get; set; }
+
+            [ExcelMapper(columname: "K")]
             public string ChuSuDung_ChuHo_NgayCap { get; set; }
+
+            [ExcelMapper(columname: "L")]
             public string ChuSuDung_ChuHo_NoiCap { get; set; }
+
+            [ExcelMapper(columname: "M")]
             public string ChuSuDung_ChuHo_DiaChiThuongTru { get; set; }
+
+            [ExcelMapper(columname: "N")]
             public string ChuSuDung_VoChong_HoTen { get; set; }
+
+            [ExcelMapper(columname: "O")]
             public string ChuSuDung_VoChong_NamSinh { get; set; }
+
+            [ExcelMapper(columname: "P")]
             public string ChuSuDung_VoChong_GioiTinh { get; set; }
+
+            [ExcelMapper(columname: "Q")]
             public string ChuSuDung_VoChong_LoaiGiayTo { get; set; }
+
+            [ExcelMapper(columname: "R")]
             public string ChuSuDung_VoChong_SoGiayTo { get; set; }
+
+            [ExcelMapper(columname: "S")]
             public string ChuSuDung_VoChong_NgayCap { get; set; }
+
+            [ExcelMapper(columname: "T")]
             public string ChuSuDung_VoChong_NoiCap { get; set; }
+
+            [ExcelMapper(columname: "U")]
             public string ChuSuDung_VoChong_DiaChiThuongTru { get; set; }
+
+            [ExcelMapper(columname: "V")]
             public string ChuyenNhuong_ChuHo_HoTen { get; set; }
+
+            [ExcelMapper(columname: "W")]
             public string ChuyenNhuong_ChuHo_NamSinh { get; set; }
+
+            [ExcelMapper(columname: "X")]
             public string ChuyenNhuong_ChuHo_GioiTinh { get; set; }
+
+            [ExcelMapper(columname: "Y")]
             public string ChuyenNhuong_ChuHo_LoaiGiayTo { get; set; }
+
+            [ExcelMapper(columname: "Z")]
             public string ChuyenNhuong_ChuHo_SoGiayTo { get; set; }
+
+            [ExcelMapper(columname: "AA")]
             public string ChuyenNhuong_ChuHo_NgayCap { get; set; }
+
+            [ExcelMapper(columname: "AB")]
             public string ChuyenNhuong_ChuHo_NoiCap { get; set; }
+
+            [ExcelMapper(columname: "AC")]
             public string ChuyenNhuong_ChuHo_DiaChiThuongTru { get; set; }
+
+            [ExcelMapper(columname: "AD")]
             public string ChuyenNhuong_VoChong_HoTen { get; set; }
+
+            [ExcelMapper(columname: "AE")]
             public string ChuyenNhuong_VoChong_NamSinh { get; set; }
+
+            [ExcelMapper(columname: "AF")]
             public string ChuyenNhuong_VoChong_GioiTinh { get; set; }
+
+            [ExcelMapper(columname: "AG")]
             public string ChuyenNhuong_VoChong_LoaiGiayTo { get; set; }
+
+            [ExcelMapper(columname: "AH")]
             public string ChuyenNhuong_VoChong_SoGiayTo { get; set; }
+
+            [ExcelMapper(columname: "AI")]
             public string ChuyenNhuong_VoChong_NgayCap { get; set; }
+
+            [ExcelMapper(columname: "AJ")]
             public string ChuyenNhuong_VoChong_NoiCap { get; set; }
+
+            [ExcelMapper(columname: "AK")]
             public string ChuyenNhuong_VoChong_DiaChiThuongTru { get; set; }
+
+            [ExcelMapper(columname: "AL")]
             public string ChuyenNhuong_HinhThuc { get; set; }
+
+            [ExcelMapper(columname: "AM")]
             public string ChuyenNhuong_HopDong { get; set; }
+
+            [ExcelMapper(columname: "AN")]
             public string GCN_Serial { get; set; }
+
+            [ExcelMapper(columname: "AO")]
             public string GCN_MaVach { get; set; }
+
+            [ExcelMapper(columname: "AP")]
             public string GCN_SoGCN { get; set; }
+
+            [ExcelMapper(columname: "AQ")]
             public string GCN_NgayCap { get; set; }
+
+            [ExcelMapper(columname: "AR")]
             public string GCN_NgayChuyenNhuong { get; set; }
+        }
+
+        public class ExcelMapperAttribute : Attribute
+        {
+            public ExcelMapperAttribute()
+            {
+            }
+
+            public ExcelMapperAttribute(string columname)
+            {
+                ColumnName = columname;
+            }
+
+            public string ColumnName { get; private set; }
         }
     }
 }
