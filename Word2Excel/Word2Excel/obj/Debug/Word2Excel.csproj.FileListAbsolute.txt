@@ -71,12 +71,12 @@ E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\bin\Debug\System.IO.Packa
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\bin\Debug\DocumentFormat.OpenXml.xml
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\bin\Debug\Newtonsoft.Json.xml
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\bin\Debug\System.IO.Packaging.xml
-E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.csprojAssemblyReference.cache
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.csproj.ResolveComReference.cache
-E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.Form1.resources
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.Properties.Resources.resources
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.csproj.GenerateResource.cache
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.csproj.CoreCompileInputs.cache
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.csproj.CopyComplete
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.exe
 E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.pdb
+E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.Convert.resources
+E:\Rac\Convert\convertWordtoExel\Word2Excel\Word2Excel\obj\Debug\Word2Excel.csprojAssemblyReference.cache

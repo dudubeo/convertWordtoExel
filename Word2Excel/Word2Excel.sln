@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1300
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Word2Excel", "Word2Excel\Word2Excel.csproj", "{17CD956B-76C2-491A-B5B0-0209C70FB0A2}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ConvertWtoE", "setup\setup.vdproj", "{6DAB1159-EDF7-4B8A-B8B7-A1FF27BC4B07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,8 @@ Global
 		{17CD956B-76C2-491A-B5B0-0209C70FB0A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17CD956B-76C2-491A-B5B0-0209C70FB0A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17CD956B-76C2-491A-B5B0-0209C70FB0A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DAB1159-EDF7-4B8A-B8B7-A1FF27BC4B07}.Debug|Any CPU.ActiveCfg = Debug
+		{6DAB1159-EDF7-4B8A-B8B7-A1FF27BC4B07}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
