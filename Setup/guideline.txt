@@ -1,0 +1,11 @@
+- 1. Chạy file setup.msi
+  + Chú ý: Không được cài ở ổ C hay ổ cài win (Default đang chọn là ổ C)
+  + Hãy ghi nhớ thư mục cài vì output ra ở đây
+  + Các options còn lại, để default và bấm next -> ok done
+- 2. Cách hoạt động phần mềm 
+Cài xong thì thấy file shortcut có tên ConvertWord2Excel trên màn hình.(Chạy để khởi động phần mềm)
+Cấu trúc tong thư mục file chạy chú ý:
+ + Thư mục: Template (Chứa teamplate nên đừng xóa nhé, sửa format gì sửa đây cũng ok) nhưng đừng sửa thứ tự cột, mà tốt nhất không sửa
+ + Các file convert excel dạng word_filename.xls sẽ xuất ra ở đây.
+-3 .Nếu gặp sự cố cài đặt thì chỉ liên quan đến permission của thư mục. có thể tự xem hoặc liên hệ để remote hỗ trợ.
+Thank you!.
