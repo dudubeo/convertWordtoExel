@@ -17,7 +17,9 @@ namespace Word2Excel
 {
     public partial class Convert : Form
     {
-        private const string _p_sothua = @"(?<sothua>\d{2,4})\D{1,5}T. b.n ..\D*(?<soto>\d{2,3})";
+        // private const string _p_sothua = @"(?<sothua>\d{2,4})\D{1,5}T. b.n ..\D*(?<soto>\d{2,3})";
+        private const string _p_sothua = @"(?<sothua>\d{2,4})\D{1,2}.*T. b.n ..\D*(?<soto>\d{2,3})";
+
         private const string _p_ThongTinDat_DienTich = @".i.n t.ch:(?<dientich>[\d\.]*).*";
 
         // private const string _p_ThongTinDat_MucDichSuDung = @"M.c ..ch s. d.ng[^:\n]*:(?<mucdichsudungdat>.*)\n";
@@ -30,8 +32,8 @@ namespace Word2Excel
         //private const string _p_DiachiThuongtru = @"\n..a ch. th..ng tr.:(?<diachithuogntru>.*)\n";
         private const string _p_DiachiThuongtru = @"(Đ|D).a ch. th..ng tr.:(?<diachithuogntru>.*)\n";
 
-        private const string _p_ChuSuDung_ChuHo_HoTen = @"\n(|...)(.ng|B.|Ch.ng|V.): (?<hoten>[^:;,.\n\d]{8,})";
-        private const string _p_ChuSuDung_ChuHo_HoTen2 = @"\n(|...)(.ng|B.|Ch.ng|V.) (?<hoten>[^:;,.\n\d]{8,})";
+        private const string _p_ChuSuDung_ChuHo_HoTen = @"\n(|...)(.ng|B.|Ch.ng|V.|b.|ch.ng): (?<hoten>[^:;,.\n\d]{8,})";
+        private const string _p_ChuSuDung_ChuHo_HoTen2 = @"\n(|...)(.ng|B.|Ch.ng|V.|b.|ch.ng) (?<hoten>[^:;,.\n\d]{8,})";
 
         //private const string _p_ChuSuDung_ChuHo_NamSinh = @"(N.m sinh|Sinh n.m): (?<namsinh>\d{4})(\n|;|,)";
         private const string _p_ChuSuDung_ChuHo_NamSinh = @"(N.m sinh|Sinh n.m)\D{1,2}(?<namsinh>\d{4})";
@@ -39,15 +41,20 @@ namespace Word2Excel
         private const string _p_Loaigiay = @"(CMND|CCCD)";
         private const string _p_socmnd = @"\D(?<socmnd>\d{9,12})";
         private const string _p_ChuSuDung_ChuHo_Ngaycap = @"c.p ng.y (?<ngaycap>(\d\d th.ng \d\d n.m \d{4}|[\d\/]*))";
-        private const string _p_ChuSuDung_ChuHo_Noicap = @"(?<noicap>C.ng An \D*)";
-        // private const string _p_ChuSuDung_ChuHo_LoaiGiayTo = @"(CMND|CCCD)\D*(?<socmnd>\d{9})(\D*(?<noicap>C.ng An \D*), c.p ng.y: (?<ngaycap>[\d\/]*)|)";
-        // private const string _p_ChuSuDung_ChuHo_LoaiGiayTo = @"(CMND|CCCD)\D(?<socmnd>\d{9,12})(\D*(?<noicap>C.ng An \D*), c.p ng.y: (?<ngaycap>[\d\/]*)|)";
+
+        // private const string _p_ChuSuDung_ChuHo_Noicap = @"(?<noicap>C.ng an (t.nh |)\S{2,5} \S{2,5})";
+        private const string _p_ChuSuDung_ChuHo_Noicap = @"(CMND|CCCD)\D*(?<socmnd>\d{9})(\D*(?<noicap>C.ng An \D*), c.p ng.y: (?<ngaycap>[\d\/]*)|)";
+
+        //private const string _p_ChuSuDung_ChuHo_LoaiGiayTo = @"(CMND|CCCD)\D*(?<socmnd>\d{9})(\D*(?<noicap>C.ng An \D*), c.p ng.y: (?<ngaycap>[\d\/]*)|)";
 
         //private const string _p_dato = @"..t . ";
         private const string _p_dato = @"(..t . )|(..t .:)";
 
         //private const string _p_dattrong = @"Đ.t tr.ng ";
         private const string _p_dattrong = @"(Đ.t tr.ng )|(Đ.t ..ng )";
+
+        // private const string _p_sodothuadat = @"(S. đ. th.a đ.t)";
+        private const string _p_sodothuadat = @"(S. .. th.a ..t)|(S.. .. th.a ..t)";
 
         //private const string _p_ChuSuDung_ChuHo_DiaChiThuongTru = @"..a ch. th..ng tr.:(?<diachithuogntru>.*)\n";
         //private const string _p_ChuSuDung_VoChong_HoTen = @"^(.ng|B.|Ch.ng|V.): (?<hoten>.*)$";
@@ -67,6 +74,7 @@ namespace Word2Excel
         private const string _p_chuyennhuong_hopdong = @"Theo h. s. s.: (?<sohopdong>.*)";
         private const string _p_chuyennhuong_tangcho = @"(T.ng cho)";
         private const string _p_chuyennhuong_cn = @"(Chuy.n nh..ng cho)";
+        private const string _p_Dientichdat = @"(?<dientich>([0-9])\w+.\S)";
 
         private List<string> _temdata;
 
@@ -127,17 +135,23 @@ namespace Word2Excel
                 _fileName = openFileDialog1.SafeFileName.Replace(".docx", "");
             }
             var converter = new DocumentConverter();
-            var result = converter.ExtractRawText(textBox1.Text);
-            var value = result.Value;
-            _temdata = new List<string>();
-            _temdata = (Regex.Split(value, _p_tachtrang)).Where(x => x.Length > 500).ToList();
-
-            if (value == null)
+            if (textBox1.Text != null)
             {
-                MessageBox.Show("File docx not data");
+                var result = converter.ExtractRawText(textBox1.Text);
+                var value = result.Value;
+                _temdata = new List<string>();
+                _temdata = (Regex.Split(value, _p_tachtrang)).Where(x => x.Length > 550).ToList();
+                if (value == null)
+                {
+                    MessageBox.Show("File docx not data");
+                }
+                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp.txt");
+                File.WriteAllText(filePath, value);
             }
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "team.txt");
-            File.WriteAllText(filePath, value);
+            else
+            {
+                MessageBox.Show("Vui lòng chọn file !");
+            }
         }
 
         private void btnConvert_Click(object sender, EventArgs e)
@@ -192,37 +206,33 @@ namespace Word2Excel
                     if (IsMatch_Pattern(line, out value, _p_ThongTinDat_MucDichSuDung))
                     {
                         MatchCollection temp;
+                        string tempDientich = string.Empty;
+                        if (IsMatch_Pattern(value[0].Value, out temp, _p_Dientichdat))
+                        {
+                            tempDientich = temp[0].Value;
+                        }
 
                         if (IsMatch_Pattern(value[0].Value, out temp, _p_dato))
                         {
-                            data.ThongTinDat_Dato = value[0].Value;
+                            data.ThongTinDat_Dato = value[0].Value.Substring(0, value[0].Value.IndexOf(':')).Trim();
+                            data.ThongTinDat_Dat_Dientich = tempDientich;
                         }
                         else
                         {
-                            if (IsMatch_Pattern(value[0].Value, out temp, _p_dattrong))
-                            {
-                                data.ThongTinDat_Dattrong = value[0].Value;
-                            }
-                            else
-                            {
-                                data.ThongTinDat_DatKhac = value[0].Value;
-                            }
+                            data.ThongTinDat_Datkhac = value[0].Value.Substring(0, value[0].Value.IndexOf(':')).Trim();
+                            data.ThongTinDat_DatKhac_Dientich = tempDientich;
                         }
                         if (value.Count > 1)
                         {
-                            if (IsMatch_Pattern(value[1].Value, out temp, _p_dattrong))
+                            if (IsMatch_Pattern(value[1].Value, out temp, _p_Dientichdat))
                             {
-                                data.ThongTinDat_Dattrong = value[1].Value;
+                                tempDientich = temp[0].Value;
                             }
-                            else
-                            {
-                                data.ThongTinDat_DatKhac = value[1].Value;
-                            }
+
+                            data.ThongTinDat_Datkhac = value[1].Value.Substring(0, value[1].Value.IndexOf(':')).Trim(); ;
+                            data.ThongTinDat_DatKhac_Dientich = tempDientich;
                         }
-                        if (value.Count > 2)
-                        {
-                            data.ThongTinDat_DatKhac = value[2].Value;
-                        }
+
                         //data.ThongTinDat_MucDichSuDung = value[0].Value.Substring(value[0].Value.IndexOf(':') + 1).Trim();
                         //data.ThongTinDat_MucDichSuDung = value[0].Groups["mucdichsudungdat"].Value;
                         //if (!string.IsNullOrEmpty(value[0].Groups["mucdichsudungdat"].Value) && IsMatch_Pattern(value[0].Groups["mucdichsudungdat"].Value, out value, _p_chimuc))
@@ -285,6 +295,12 @@ namespace Word2Excel
                         {
                             // data.ChuSuDung_ChuHo_HoTen = value[0].Value.Substring(value[0].Value.IndexOf(':') + 1).Trim();
                             data.ChuSuDung_ChuHo_HoTen = value[0].Groups["hoten"].Value;
+                            MatchCollection teamp;
+                            if (IsMatch_Pattern(data.ChuSuDung_ChuHo_HoTen, out teamp, _p_sodothuadat))
+                            {
+                                data.ChuSuDung_ChuHo_HoTen = string.Empty;
+                            }
+
                             if (VietnameseDecode(value[0].Value).Contains("ong"))
                             {
                                 data.ChuSuDung_ChuHo_GioiTinh = "1";
@@ -552,51 +568,58 @@ namespace Word2Excel
             try
             {
                 Worksheet ws = book.Worksheets[0];
-                int row = 4;
-                Style style = new Style();
-                style.Borders[BorderType.TopBorder].LineStyle = CellBorderType.Thin;
-                style.Borders[BorderType.TopBorder].Color = Color.Black;
-                style.Borders[BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
-                style.Borders[BorderType.BottomBorder].Color = Color.Black;
-                style.Borders[BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
-                style.Borders[BorderType.LeftBorder].Color = Color.Black;
-                style.Borders[BorderType.RightBorder].LineStyle = CellBorderType.Thin;
-                style.Borders[BorderType.RightBorder].Color = Color.Black;
-                style.HorizontalAlignment = TextAlignmentType.Left;
-                Range rb = ws.Cells.CreateRange(string.Format("A4:AT{0}", (listData.Count + 3).ToString()));
-
-                foreach (var item in listData)
+                if (listData.Count > 0)
                 {
-                    IList<PropertyInfo> properties = new List<PropertyInfo>(item.GetType().GetProperties())
-                            .Where(prop => prop.IsDefined(typeof(ExcelMapperAttribute), false))
-                            .ToList();
-                    if (properties == null || properties.Count < 1)
-                    {
-                        break;
-                    }
-                    foreach (PropertyInfo property in properties)
-                    {
-                        ExcelMapperAttribute mapperColumn = property.GetCustomAttribute<ExcelMapperAttribute>();
+                    int row = 4;
+                    Style style = new Style();
+                    style.Borders[BorderType.TopBorder].LineStyle = CellBorderType.Thin;
+                    style.Borders[BorderType.TopBorder].Color = Color.Black;
+                    style.Borders[BorderType.BottomBorder].LineStyle = CellBorderType.Thin;
+                    style.Borders[BorderType.BottomBorder].Color = Color.Black;
+                    style.Borders[BorderType.LeftBorder].LineStyle = CellBorderType.Thin;
+                    style.Borders[BorderType.LeftBorder].Color = Color.Black;
+                    style.Borders[BorderType.RightBorder].LineStyle = CellBorderType.Thin;
+                    style.Borders[BorderType.RightBorder].Color = Color.Black;
+                    style.HorizontalAlignment = TextAlignmentType.Left;
+                    Range rb = ws.Cells.CreateRange(string.Format("A4:AT{0}", (listData.Count + 3).ToString()));
 
-                        if (!string.IsNullOrWhiteSpace(mapperColumn.ColumnName) && property.GetValue(item, null) != null)
+                    foreach (var item in listData)
+                    {
+                        IList<PropertyInfo> properties = new List<PropertyInfo>(item.GetType().GetProperties())
+                                .Where(prop => prop.IsDefined(typeof(ExcelMapperAttribute), false))
+                                .ToList();
+                        if (properties == null || properties.Count < 1)
                         {
-                            ws.Cells[string.Format("{0}{1}", mapperColumn.ColumnName, row)].Value = property.GetValue(item, null);
-
-                            //ws.Cells[string.Format("{0}{1}", mapperColumn.ColumnName, row)].SetStyle(style);
+                            break;
                         }
+                        foreach (PropertyInfo property in properties)
+                        {
+                            ExcelMapperAttribute mapperColumn = property.GetCustomAttribute<ExcelMapperAttribute>();
+
+                            if (!string.IsNullOrWhiteSpace(mapperColumn.ColumnName) && property.GetValue(item, null) != null)
+                            {
+                                ws.Cells[string.Format("{0}{1}", mapperColumn.ColumnName, row)].Value = property.GetValue(item, null);
+
+                                //ws.Cells[string.Format("{0}{1}", mapperColumn.ColumnName, row)].SetStyle(style);
+                            }
+                        }
+                        row++;
+                        progressBar1.Value++;
                     }
-                    row++;
-                    progressBar1.Value++;
+                    rb.SetStyle(style);
+                    rb.UnMerge();
+
+                    bool exists = System.IO.Directory.Exists(Path.GetFullPath("Output1\\"));
+                    if (!exists)
+                        System.IO.Directory.CreateDirectory(Path.GetFullPath("Output\\"));
+                    book.Save(Path.GetFullPath("Output\\") + _fileName + ".xls", SaveFormat.Excel97To2003);
+                    MessageBox.Show("Done!");
                 }
-                rb.SetStyle(style);
-                rb.UnMerge();
+                else
+                {
+                    MessageBox.Show("Bó tay.com !!!");
+                }
 
-                bool exists = System.IO.Directory.Exists(Path.GetFullPath("Output1\\"));
-                if (!exists)
-                    System.IO.Directory.CreateDirectory(Path.GetFullPath("Output\\"));
-                book.Save(Path.GetFullPath("Output\\") + _fileName + ".xls", SaveFormat.Excel97To2003);
-
-                MessageBox.Show("Done!");
                 progressBar1.Value = 0;
             }
             catch (Exception ex)
@@ -618,10 +641,13 @@ namespace Word2Excel
 
             foreach (PropertyInfo property in properties)
             {
-                if (property.GetValue(item, null) != null && !string.IsNullOrEmpty(property.GetValue(item, null).ToString()))
+                if (property.Name != "ChuSuDung_ChuHo_HoTen")
                 {
-                    check = true;
-                    break;
+                    if (property.GetValue(item, null) != null && !string.IsNullOrEmpty(property.GetValue(item, null).ToString()))
+                    {
+                        check = true;
+                        break;
+                    }
                 }
             }
             return check;
@@ -652,129 +678,132 @@ namespace Word2Excel
             public string ThongTinDat_Dato { get; set; }
 
             [ExcelMapper(columname: "E")]
-            public string ThongTinDat_Dattrong { get; set; }
+            public string ThongTinDat_Dat_Dientich { get; set; }
 
             [ExcelMapper(columname: "F")]
-            public string ThongTinDat_DatKhac { get; set; }
+            public string ThongTinDat_Datkhac { get; set; }
 
             [ExcelMapper(columname: "G")]
-            public string ThongTinDat_DiaChiThuaDat { get; set; }
+            public string ThongTinDat_DatKhac_Dientich { get; set; }
 
             [ExcelMapper(columname: "H")]
-            public string ChuSuDung_ChuHo_HoTen { get; set; }
+            public string ThongTinDat_DiaChiThuaDat { get; set; }
 
             [ExcelMapper(columname: "I")]
-            public string ChuSuDung_ChuHo_NamSinh { get; set; }
+            public string ChuSuDung_ChuHo_HoTen { get; set; }
 
             [ExcelMapper(columname: "J")]
-            public string ChuSuDung_ChuHo_GioiTinh { get; set; }
+            public string ChuSuDung_ChuHo_NamSinh { get; set; }
 
             [ExcelMapper(columname: "K")]
-            public string ChuSuDung_ChuHo_LoaiGiayTo { get; set; }
+            public string ChuSuDung_ChuHo_GioiTinh { get; set; }
 
             [ExcelMapper(columname: "L")]
-            public string ChuSuDung_ChuHo_SoGiayTo { get; set; }
+            public string ChuSuDung_ChuHo_LoaiGiayTo { get; set; }
 
             [ExcelMapper(columname: "M")]
-            public string ChuSuDung_ChuHo_NgayCap { get; set; }
+            public string ChuSuDung_ChuHo_SoGiayTo { get; set; }
 
             [ExcelMapper(columname: "N")]
-            public string ChuSuDung_ChuHo_NoiCap { get; set; }
+            public string ChuSuDung_ChuHo_NgayCap { get; set; }
 
             [ExcelMapper(columname: "O")]
-            public string ChuSuDung_ChuHo_DiaChiThuongTru { get; set; }
+            public string ChuSuDung_ChuHo_NoiCap { get; set; }
 
             [ExcelMapper(columname: "P")]
-            public string ChuSuDung_VoChong_HoTen { get; set; }
+            public string ChuSuDung_ChuHo_DiaChiThuongTru { get; set; }
 
             [ExcelMapper(columname: "Q")]
-            public string ChuSuDung_VoChong_NamSinh { get; set; }
+            public string ChuSuDung_VoChong_HoTen { get; set; }
 
             [ExcelMapper(columname: "R")]
-            public string ChuSuDung_VoChong_GioiTinh { get; set; }
+            public string ChuSuDung_VoChong_NamSinh { get; set; }
 
             [ExcelMapper(columname: "S")]
-            public string ChuSuDung_VoChong_LoaiGiayTo { get; set; }
+            public string ChuSuDung_VoChong_GioiTinh { get; set; }
 
             [ExcelMapper(columname: "T")]
-            public string ChuSuDung_VoChong_SoGiayTo { get; set; }
+            public string ChuSuDung_VoChong_LoaiGiayTo { get; set; }
 
             [ExcelMapper(columname: "U")]
-            public string ChuSuDung_VoChong_NgayCap { get; set; }
+            public string ChuSuDung_VoChong_SoGiayTo { get; set; }
 
             [ExcelMapper(columname: "V")]
-            public string ChuSuDung_VoChong_NoiCap { get; set; }
+            public string ChuSuDung_VoChong_NgayCap { get; set; }
 
             [ExcelMapper(columname: "W")]
-            public string ChuSuDung_VoChong_DiaChiThuongTru { get; set; }
+            public string ChuSuDung_VoChong_NoiCap { get; set; }
 
             [ExcelMapper(columname: "X")]
-            public string ChuyenNhuong_ChuHo_HoTen { get; set; }
+            public string ChuSuDung_VoChong_DiaChiThuongTru { get; set; }
 
             [ExcelMapper(columname: "Y")]
-            public string ChuyenNhuong_ChuHo_NamSinh { get; set; }
+            public string ChuyenNhuong_ChuHo_HoTen { get; set; }
 
             [ExcelMapper(columname: "Z")]
-            public string ChuyenNhuong_ChuHo_GioiTinh { get; set; }
+            public string ChuyenNhuong_ChuHo_NamSinh { get; set; }
 
             [ExcelMapper(columname: "AA")]
-            public string ChuyenNhuong_ChuHo_LoaiGiayTo { get; set; }
+            public string ChuyenNhuong_ChuHo_GioiTinh { get; set; }
 
             [ExcelMapper(columname: "AB")]
-            public string ChuyenNhuong_ChuHo_SoGiayTo { get; set; }
+            public string ChuyenNhuong_ChuHo_LoaiGiayTo { get; set; }
 
             [ExcelMapper(columname: "AC")]
-            public string ChuyenNhuong_ChuHo_NgayCap { get; set; }
+            public string ChuyenNhuong_ChuHo_SoGiayTo { get; set; }
 
             [ExcelMapper(columname: "AD")]
-            public string ChuyenNhuong_ChuHo_NoiCap { get; set; }
+            public string ChuyenNhuong_ChuHo_NgayCap { get; set; }
 
             [ExcelMapper(columname: "AE")]
-            public string ChuyenNhuong_ChuHo_DiaChiThuongTru { get; set; }
+            public string ChuyenNhuong_ChuHo_NoiCap { get; set; }
 
             [ExcelMapper(columname: "AF")]
-            public string ChuyenNhuong_VoChong_HoTen { get; set; }
+            public string ChuyenNhuong_ChuHo_DiaChiThuongTru { get; set; }
 
             [ExcelMapper(columname: "AG")]
-            public string ChuyenNhuong_VoChong_NamSinh { get; set; }
+            public string ChuyenNhuong_VoChong_HoTen { get; set; }
 
             [ExcelMapper(columname: "AH")]
-            public string ChuyenNhuong_VoChong_GioiTinh { get; set; }
+            public string ChuyenNhuong_VoChong_NamSinh { get; set; }
 
             [ExcelMapper(columname: "AI")]
-            public string ChuyenNhuong_VoChong_LoaiGiayTo { get; set; }
+            public string ChuyenNhuong_VoChong_GioiTinh { get; set; }
 
             [ExcelMapper(columname: "AJ")]
-            public string ChuyenNhuong_VoChong_SoGiayTo { get; set; }
+            public string ChuyenNhuong_VoChong_LoaiGiayTo { get; set; }
 
             [ExcelMapper(columname: "AK")]
-            public string ChuyenNhuong_VoChong_NgayCap { get; set; }
+            public string ChuyenNhuong_VoChong_SoGiayTo { get; set; }
 
             [ExcelMapper(columname: "AL")]
-            public string ChuyenNhuong_VoChong_NoiCap { get; set; }
+            public string ChuyenNhuong_VoChong_NgayCap { get; set; }
 
             [ExcelMapper(columname: "AM")]
-            public string ChuyenNhuong_VoChong_DiaChiThuongTru { get; set; }
+            public string ChuyenNhuong_VoChong_NoiCap { get; set; }
 
             [ExcelMapper(columname: "AN")]
-            public string ChuyenNhuong_HinhThuc { get; set; }
+            public string ChuyenNhuong_VoChong_DiaChiThuongTru { get; set; }
 
             [ExcelMapper(columname: "AO")]
-            public string ChuyenNhuong_HopDong { get; set; }
+            public string ChuyenNhuong_HinhThuc { get; set; }
 
             [ExcelMapper(columname: "AP")]
-            public string GCN_Serial { get; set; }
+            public string ChuyenNhuong_HopDong { get; set; }
 
             [ExcelMapper(columname: "AQ")]
-            public string GCN_MaVach { get; set; }
+            public string GCN_Serial { get; set; }
 
             [ExcelMapper(columname: "AR")]
-            public string GCN_SoGCN { get; set; }
+            public string GCN_MaVach { get; set; }
 
             [ExcelMapper(columname: "AS")]
-            public string GCN_NgayCap { get; set; }
+            public string GCN_SoGCN { get; set; }
 
             [ExcelMapper(columname: "AT")]
+            public string GCN_NgayCap { get; set; }
+
+            [ExcelMapper(columname: "AU")]
             public string GCN_NgayChuyenNhuong { get; set; }
         }
 
